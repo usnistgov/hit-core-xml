@@ -16,8 +16,8 @@ package gov.nist.hit.core.service.xml;
 import gov.nist.hit.core.domain.MessageModel;
 import gov.nist.hit.core.domain.MessageParserCommand;
 import gov.nist.hit.core.domain.TestContext;
-import gov.nist.hit.core.domain.XMLTestContext;
 import gov.nist.hit.core.service.exception.MessageParserException;
+import gov.nist.hit.core.xml.domain.XMLTestContext;
 
 
 public class XMLMessageParserImpl extends XMLMessageParser {

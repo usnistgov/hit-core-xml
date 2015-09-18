@@ -16,9 +16,9 @@ import gov.nist.hit.core.domain.ProfileModel;
 import gov.nist.hit.core.domain.TestCaseDocument;
 import gov.nist.hit.core.domain.TestContext;
 import gov.nist.hit.core.domain.TestDomain;
-import gov.nist.hit.core.domain.XMLTestContext;
 import gov.nist.hit.core.service.ResourcebundleLoader;
 import gov.nist.hit.core.service.exception.ProfileParserException;
+import gov.nist.hit.core.xml.domain.XMLTestContext;
 
 import java.io.IOException;
 import java.util.HashSet;

@@ -1,39 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>gov.nist.hit.core.xml</groupId>
-	<artifactId>hit-core-xml</artifactId>
-	<version>1.0.0-SNAPSHOT</version>
-	<name>hit-core-xml</name>
-	<description>hit-core-hl7v2</description>
-	<packaging>pom</packaging>
-	<modules>
- 		<module>hit-core-xml-domain</module>
- 		<module>hit-core-xml-repo</module>
- 		<module>hit-core-xml-service</module>
- 		<module>hit-core-xml-api</module>
-	</modules>
-
-	<properties>
- 	</properties>
-
-	<dependencies>		
-		<dependency>
-			<groupId>gov.nist.hit.core</groupId>
-			<artifactId>hit-core-service</artifactId>
-			<version>1.0.0-SNAPSHOT</version>
-		</dependency>
- 		
-		<dependency>
-			<groupId>gov.nist.hit.core</groupId>
-			<artifactId>hit-core-transport</artifactId>
-			<version>1.0.0-SNAPSHOT</version>
-		</dependency>
+	<artifactId>hit-core-xml-repo</artifactId>
+	<packaging>jar</packaging>
+	<name>hit-core-xml-repo</name>
+	<url>http://maven.apache.org</url>
+	<parent>
+		<groupId>gov.nist.hit.core.xml</groupId>
+		<artifactId>hit-core-xml</artifactId>
+		<version>1.0.0-SNAPSHOT</version>
+	</parent>
 	
+	<dependencies>
+
+		<dependency>
+			<groupId>gov.nist.hit.core.xml</groupId>
+			<artifactId>hit-core-xml-domain</artifactId>
+			<version>1.0.0-SNAPSHOT</version>
+		</dependency>
+
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.11</version>
+			<scope>test</scope>
+		</dependency>
+ 
+		
 	</dependencies>
-
-
-
 	<build>
 		<pluginManagement>
 			<plugins>
