@@ -15,7 +15,6 @@ package gov.nist.hit.core.service.xml;
 import gov.nist.hit.core.domain.ProfileModel;
 import gov.nist.hit.core.domain.TestCaseDocument;
 import gov.nist.hit.core.domain.TestContext;
-import gov.nist.hit.core.domain.TestDomain;
 import gov.nist.hit.core.service.ResourcebundleLoader;
 import gov.nist.hit.core.service.exception.ProfileParserException;
 import gov.nist.hit.core.xml.domain.XMLTestContext;
@@ -34,6 +33,7 @@ public class XMLResourcebundleLoaderImpl extends ResourcebundleLoader {
   static final Logger logger = LoggerFactory.getLogger(XMLResourcebundleLoaderImpl.class);
   final static String SCHEMA_PATTERN = "Global/Schemas/";
   final static String SCHEMATRON_PATTERN = "Global/Schematrons/";
+  static final String FORMAT = "XML";
 
 
   public XMLResourcebundleLoaderImpl() {}
@@ -47,11 +47,12 @@ public class XMLResourcebundleLoaderImpl extends ResourcebundleLoader {
 
 
   @Override
-  public TestContext testContext(String path, JsonNode domainObj) throws IOException {
+  public TestContext testContext(String path, JsonNode formatObj) throws IOException {
+    formatObj = formatObj.findValue(FORMAT) != null ? formatObj.findValue(FORMAT) : formatObj;
     XMLTestContext testContext = new XMLTestContext();
-    testContext.setDomain(TestDomain.XML);
+    testContext.setFormat(FORMAT);
     Set<String> schemaPathList = new HashSet<String>();
-    JsonNode schemaPathListObj = domainObj.findValue("schemaPathList");
+    JsonNode schemaPathListObj = formatObj.findValue("schemaPathList");
     Iterator<JsonNode> it = schemaPathListObj.iterator();
     while (it.hasNext()) {
       JsonNode node = it.next();
@@ -59,7 +60,7 @@ public class XMLResourcebundleLoaderImpl extends ResourcebundleLoader {
     }
 
     Set<String> schematronPathList = new HashSet<String>();
-    JsonNode schematronPathListObj = domainObj.findValue("schematronPathList");
+    JsonNode schematronPathListObj = formatObj.findValue("schematronPathList");
     it = schematronPathListObj.iterator();
     while (it.hasNext()) {
       JsonNode node = it.next();
