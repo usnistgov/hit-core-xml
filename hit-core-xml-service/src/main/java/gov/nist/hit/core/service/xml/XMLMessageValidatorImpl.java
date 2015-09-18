@@ -11,35 +11,23 @@
  */
 package gov.nist.hit.core.service.xml;
 
-
-
-import gov.nist.hit.core.domain.MessageModel;
-import gov.nist.hit.core.domain.MessageParserCommand;
+import gov.nist.hit.core.domain.MessageValidationCommand;
+import gov.nist.hit.core.domain.MessageValidationResult;
 import gov.nist.hit.core.domain.TestContext;
-import gov.nist.hit.core.domain.XMLTestContext;
-import gov.nist.hit.core.service.exception.MessageParserException;
+import gov.nist.hit.core.service.exception.MessageValidationException;
 
 
-public class XMLMessageParserImpl extends XMLMessageParser {
+public class XMLMessageValidatorImpl extends XMLMessageValidator {
 
-  public XMLMessageParserImpl() {
+  public XMLMessageValidatorImpl() {
     super();
   }
 
-
-
   @Override
-  public MessageModel parse(TestContext testContext, MessageParserCommand command)
-      throws MessageParserException {
-    if (testContext instanceof XMLTestContext) {
-      return parse(command.getContent()); // FIXME. add schema and schematron info if necessary
-    } else {
-      throw new MessageParserException(
-          "Invalid Context Provided. Expected Context is XMLTestContext but found "
-              + testContext.getClass().getSimpleName());
-    }
+  public MessageValidationResult validate(TestContext testContext, MessageValidationCommand command)
+      throws MessageValidationException {
+    // TODO Auto-generated method stub
+    return new MessageValidationResult(null, null);
   }
-
-
 
 }

@@ -12,11 +12,12 @@
 
 package gov.nist.hit.core.api.xml;
 
-import gov.nist.hit.core.domain.MessageCommand;
+import gov.nist.hit.core.domain.MessageValidationResult;
+import gov.nist.hit.core.domain.MessageParserCommand;
+import gov.nist.hit.core.domain.MessageValidationCommand;
 import gov.nist.hit.core.domain.TestContext;
 import gov.nist.hit.core.domain.TestDomain;
 import gov.nist.hit.core.domain.XMLTestContext;
-import gov.nist.hit.core.repo.EDITestContextRepository;
 import gov.nist.hit.core.repo.TestCaseRepository;
 import gov.nist.hit.core.repo.TestContextRepository;
 import gov.nist.hit.core.repo.TestStepRepository;
@@ -29,6 +30,8 @@ import gov.nist.hit.core.service.exception.MessageException;
 import gov.nist.hit.core.service.exception.MessageParserException;
 import gov.nist.hit.core.service.exception.MessageValidationException;
 import gov.nist.hit.core.service.exception.TestCaseException;
+import gov.nist.hit.core.service.xml.XMLMessageParser;
+import gov.nist.hit.core.service.xml.XMLMessageValidator;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -47,7 +50,7 @@ import org.springframework.web.bind.annotation.RestController;
 /**
  * @author Harold Affo (NIST)
  * 
- */
+ */ 
 
 @RequestMapping("/xml/testcontext")
 @RestController
@@ -56,18 +59,13 @@ public class XMLTestContextController {
   Logger logger = LoggerFactory.getLogger(XMLTestContextController.class);
   
   @Autowired 
-  private XMLTestContextRepository testContextRepository; //TODO: remove type coupling 
-  
+  private XMLTestContextRepository testContextRepository;
 
   @Autowired
-  private TestStepRepository testStepRepository;
+   private XMLMessageValidator messageValidator;
 
   @Autowired
-  private MessageValidator messageValidator;
-
-  @Autowired
-  @Qualifier("xmlMessageParser")
-  private MessageParser messageParser;
+  private XMLMessageParser messageParser;
 
   @Autowired
   private ReportService reportService;
@@ -87,41 +85,27 @@ public class XMLTestContextController {
 
   @RequestMapping(value = "/{testContextId}/parseMessage", method = RequestMethod.POST)
   public List<gov.nist.hit.core.domain.MessageElement> parse(
-      @PathVariable final Long testContextId, @RequestBody final MessageCommand command)
+      @PathVariable final Long testContextId, @RequestBody final MessageParserCommand command)
       throws MessageParserException {
-    try {
-      logger.info("Parsing message");
-      XMLTestContext testContext = testContext(testContextId);
-      String message = getMessageContent(command);
-      return messageParser.parse(new String[]{message},
-          (String[]) testContext.getSchemaPathList().toArray(),
-          (String[]) testContext.getSchematronPathList().toArray()).getElements();
-    } catch (MessageException e) {
-      throw new MessageParserException(e.getMessage());
-    }
+    logger.info("Parsing xml message");
+    XMLTestContext testContext = testContext(testContextId);
+    return messageParser.parse(testContext, command).getElements();
   }
 
   @RequestMapping(value = "/{testContextId}/validateMessage", method = RequestMethod.POST)
-  public HashMap<String, String> validate(@PathVariable final Long testContextId,
-      @RequestBody final MessageCommand command) throws MessageValidationException {
+  public MessageValidationResult validate(@PathVariable final Long testContextId,
+      @RequestBody final MessageValidationCommand command) throws MessageValidationException {
     try {
       XMLTestContext testContext = testContext(testContextId);
-      String message = getMessageContent(command);
-      String json =
-          messageValidator.validate(new String[]{message},
-              (String[]) testContext.getSchemaPathList().toArray(),
-              (String[]) testContext.getSchematronPathList().toArray());
-      return reportService.getReports(json);
-    } catch (MessageException e) {
-      throw new MessageValidationException(e.getMessage());
-    } catch (MessageValidationException e) {
+      return messageValidator.validate(testContext, command);
+     } catch (MessageValidationException e) {
       throw new MessageValidationException(e.getMessage());
     } catch (Exception e) {
       throw new MessageValidationException(e.getMessage());
     }
   }
 
-  public static String getMessageContent(MessageCommand command) throws MessageException {
+  public static String getMessageContent(MessageValidationCommand command) throws MessageException {
     String message = command.getContent();
     if (message == null) {
       throw new MessageException("No message provided");

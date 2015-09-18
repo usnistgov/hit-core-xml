@@ -11,35 +11,13 @@
  */
 package gov.nist.hit.core.service.xml;
 
+import gov.nist.hit.core.service.MessageValidator;
 
 
-import gov.nist.hit.core.domain.MessageModel;
-import gov.nist.hit.core.domain.MessageParserCommand;
-import gov.nist.hit.core.domain.TestContext;
-import gov.nist.hit.core.domain.XMLTestContext;
-import gov.nist.hit.core.service.exception.MessageParserException;
+public abstract class XMLMessageValidator implements MessageValidator {
 
-
-public class XMLMessageParserImpl extends XMLMessageParser {
-
-  public XMLMessageParserImpl() {
+  public XMLMessageValidator() {
     super();
   }
-
-
-
-  @Override
-  public MessageModel parse(TestContext testContext, MessageParserCommand command)
-      throws MessageParserException {
-    if (testContext instanceof XMLTestContext) {
-      return parse(command.getContent()); // FIXME. add schema and schematron info if necessary
-    } else {
-      throw new MessageParserException(
-          "Invalid Context Provided. Expected Context is XMLTestContext but found "
-              + testContext.getClass().getSimpleName());
-    }
-  }
-
-
 
 }

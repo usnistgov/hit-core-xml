@@ -11,13 +11,78 @@
  */
 package gov.nist.hit.core.service.xml;
 
+import gov.nist.hit.core.domain.MessageElement;
+import gov.nist.hit.core.domain.MessageModel;
+import gov.nist.hit.core.domain.XMLMessageElementData;
+import gov.nist.hit.core.domain.util.XmlUtil;
 import gov.nist.hit.core.service.MessageParser;
+import gov.nist.hit.core.service.exception.MessageParserException;
+import gov.nist.hit.core.service.exception.XmlParserException;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.jdom2.Document;
+import org.jdom2.Element;
+import org.jdom2.JDOMException;
 
 
 public abstract class XMLMessageParser implements MessageParser {
 
-  public XMLMessageParser() {
-    super();
+  public MessageModel parse(String xml) throws MessageParserException {
+    try {
+      Document document = XmlUtil.toDocument(xml);
+      Element element = document.getRootElement();
+      MessageModel model = new MessageModel();
+      XMLMessageElementData data = new XMLMessageElementData(element);
+      MessageElement parentNode = getMessageElement(data);
+      processChildren(element.getChildren(), parentNode);
+      model.getElements().add(parentNode);
+      return model;
+    } catch (JDOMException | IOException e) {
+      throw new XmlParserException(e);
+    }
+  }
+
+  private void processChildren(List<Element> childElements, MessageElement parent) {
+    for (int i = 0; i < childElements.size(); i++) {
+      Element element = childElements.get(i);
+      MessageElement childNode = getMessageElement(new XMLMessageElementData(element), parent);
+      if (!element.getChildren().isEmpty()) {
+        processChildren(element.getChildren(), childNode);
+      } else if (element.getValue() != null && !"".equals(element.getValue())) {
+        getMessageElement(new XMLMessageElementData(element), element.getValue(), childNode);
+      }
+    }
+  }
+
+
+  private MessageElement getMessageElement(XMLMessageElementData data) {
+    return getMessageElement(data, null);
+  }
+
+  private MessageElement getMessageElement(XMLMessageElementData data, MessageElement parent) {
+    MessageElement element = new MessageElement();
+    element.setData(data);
+    List<MessageElement> children = new ArrayList<MessageElement>();
+    if (parent != null) {
+      if (parent.getChildren() == null) {
+        parent.setChildren(new ArrayList<MessageElement>());
+      }
+      parent.getChildren().add(element);
+    }
+    element.setChildren(children);
+    element.setLabel(data.getName());
+    return element;
+  }
+
+
+  private MessageElement getMessageElement(XMLMessageElementData data, String label,
+      MessageElement parent) {
+    MessageElement element = getMessageElement(data, parent);
+    element.setLabel(label);
+    return element;
   }
 
 
