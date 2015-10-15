@@ -55,6 +55,7 @@ public class XMLResourcebundleLoaderImpl extends ResourcebundleLoader {
     if (formatObj.findValue(FORMAT) == null){
           return null;
         } else {
+          logger.debug("processing xml testContext");
       formatObj = formatObj.findValue(FORMAT);
       XMLTestContext testContext = new XMLTestContext();
       testContext.setFormat(FORMAT);
