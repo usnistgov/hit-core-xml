@@ -36,8 +36,8 @@ import org.slf4j.LoggerFactory;
 public class XMLResourcebundleLoaderImpl extends ResourcebundleLoader {
 
   static final Logger logger = LoggerFactory.getLogger(XMLResourcebundleLoaderImpl.class);
-  final static String SCHEMA_PATTERN = "Global/Schemas/";
-  final static String SCHEMATRON_PATTERN = "Global/Schematrons/";
+  final static String SCHEMA_PATTERN = "/Global/Schemas/";
+  final static String SCHEMATRON_PATTERN = "/Global/Schematrons/";
   static final String FORMAT = "xml";
 
 
@@ -52,30 +52,38 @@ public class XMLResourcebundleLoaderImpl extends ResourcebundleLoader {
 
   @Override
   public TestContext testContext(String path, JsonNode formatObj, Stage stage) throws IOException {
-    if (formatObj.findValue(FORMAT) == null){
-          return null;
-        } else {
+    if (formatObj.findValue(FORMAT) == null) {
+      return null;
+    } else {
       formatObj = formatObj.findValue(FORMAT);
       XMLTestContext testContext = new XMLTestContext();
       testContext.setFormat(FORMAT);
       testContext.setStage(stage);
-      Set<String> schemaPathList = new HashSet<String>();
       JsonNode schemaPathListObj = formatObj.findValue("schemaPathList");
-      Iterator<JsonNode> it = schemaPathListObj.iterator();
-      while (it.hasNext()) {
-        JsonNode node = it.next();
-        schemaPathList.add(node.getTextValue());
+      if (schemaPathListObj != null && schemaPathListObj.isArray()) {
+        Set<String> schemaPathList = new HashSet<String>();
+        Iterator<JsonNode> it = schemaPathListObj.iterator();
+        while (it.hasNext()) {
+          JsonNode node = it.next();
+          if (node.getTextValue() != null && !"".equals(node.getTextValue())) {
+            schemaPathList.add(SCHEMA_PATTERN + node.getTextValue());
+          }
+        }
+        testContext.setSchemaPathList(schemaPathList);
       }
 
-      Set<String> schematronPathList = new HashSet<String>();
       JsonNode schematronPathListObj = formatObj.findValue("schematronPathList");
-      it = schematronPathListObj.iterator();
-      while (it.hasNext()) {
-        JsonNode node = it.next();
-        schematronPathList.add(node.getTextValue());
+      if (schemaPathListObj != null && schemaPathListObj.isArray()) {
+        Set<String> schematronPathList = new HashSet<String>();
+        Iterator<JsonNode> it = schematronPathListObj.iterator();
+        while (it.hasNext()) {
+          JsonNode node = it.next();
+          if (node.getTextValue() != null && !"".equals(node.getTextValue())) {
+            schematronPathList.add(SCHEMATRON_PATTERN + node.getTextValue());
+          }
+        }
+        testContext.setSchematronPathList(schematronPathList);
       }
-      testContext.setSchemaPathList(schemaPathList);
-      testContext.setSchematronPathList(schematronPathList);
       return testContext;
     }
   }
