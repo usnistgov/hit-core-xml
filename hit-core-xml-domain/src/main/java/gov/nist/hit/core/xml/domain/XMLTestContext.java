@@ -1,25 +1,27 @@
 package gov.nist.hit.core.xml.domain;
+
 import gov.nist.hit.core.domain.TestContext;
 
 import java.util.HashSet;
 import java.util.Set;
 
- import javax.persistence.Column;
+import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
- 
+import javax.persistence.FetchType;
+
 
 @Entity
-public class XMLTestContext extends TestContext { 
+public class XMLTestContext extends TestContext {
 
   private static final long serialVersionUID = 1L;
- 
-  @ElementCollection
-  @Column(name="schemaPathList")
+
+  @ElementCollection(fetch = FetchType.EAGER)
+  @Column(name = "schemaPathList")
   protected Set<String> schemaPathList = new HashSet<String>();
-  
-  @ElementCollection
-  @Column(name="schematronPathList")
+
+  @ElementCollection(fetch = FetchType.EAGER)
+  @Column(name = "schematronPathList")
   protected Set<String> schematronPathList = new HashSet<String>();
 
   public Set<String> getSchemaPathList() {
@@ -37,6 +39,6 @@ public class XMLTestContext extends TestContext {
   public void setSchematronPathList(Set<String> schematronPathList) {
     this.schematronPathList = schematronPathList;
   }
-  
+
 
 }
