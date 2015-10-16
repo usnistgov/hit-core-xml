@@ -12,6 +12,7 @@
 
 package gov.nist.hit.core.api.xml;
 
+import gov.nist.hit.core.domain.MessageModel;
 import gov.nist.hit.core.domain.MessageParserCommand;
 import gov.nist.hit.core.domain.MessageValidationCommand;
 import gov.nist.hit.core.domain.MessageValidationResult;
@@ -24,8 +25,6 @@ import gov.nist.hit.core.service.xml.XMLMessageParser;
 import gov.nist.hit.core.service.xml.XMLMessageValidator;
 import gov.nist.hit.core.xml.domain.XMLTestContext;
 import gov.nist.hit.core.xml.repo.XMLTestContextRepository;
-
-import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -70,12 +69,11 @@ public class XMLTestContextController {
   }
 
   @RequestMapping(value = "/{testContextId}/parseMessage", method = RequestMethod.POST)
-  public List<gov.nist.hit.core.domain.MessageElement> parse(
-      @PathVariable final Long testContextId, @RequestBody final MessageParserCommand command)
-      throws MessageParserException {
+  public MessageModel parse(@PathVariable final Long testContextId,
+      @RequestBody final MessageParserCommand command) throws MessageParserException {
     logger.info("Parsing xml message");
     XMLTestContext testContext = testContext(testContextId);
-    return messageParser.parse(testContext, command).getElements();
+    return messageParser.parse(testContext, command);
   }
 
   @RequestMapping(value = "/{testContextId}/validateMessage", method = RequestMethod.POST)
