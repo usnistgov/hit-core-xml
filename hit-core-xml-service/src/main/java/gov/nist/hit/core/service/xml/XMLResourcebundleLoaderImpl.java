@@ -13,9 +13,9 @@
 package gov.nist.hit.core.service.xml;
 
 import gov.nist.hit.core.domain.ProfileModel;
-import gov.nist.hit.core.domain.Stage;
 import gov.nist.hit.core.domain.TestCaseDocument;
 import gov.nist.hit.core.domain.TestContext;
+import gov.nist.hit.core.domain.TestingStage;
 import gov.nist.hit.core.domain.VocabularyLibrary;
 import gov.nist.hit.core.service.ResourcebundleLoader;
 import gov.nist.hit.core.service.exception.ProfileParserException;
@@ -25,6 +25,7 @@ import gov.nist.hit.core.xml.domain.XMLTestContext;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
 import org.codehaus.jackson.JsonGenerationException;
@@ -32,12 +33,13 @@ import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.io.Resource;
 
 public class XMLResourcebundleLoaderImpl extends ResourcebundleLoader {
 
   static final Logger logger = LoggerFactory.getLogger(XMLResourcebundleLoaderImpl.class);
-  final static String SCHEMA_PATTERN = "/Global/Schemas/";
-  final static String SCHEMATRON_PATTERN = "/Global/Schematrons/";
+  final static String SCHEMA_PATTERN = "Global/Schemas/";
+  final static String SCHEMATRON_PATTERN = "Global/Schematrons/";
   static final String FORMAT = "xml";
 
 
@@ -51,7 +53,8 @@ public class XMLResourcebundleLoaderImpl extends ResourcebundleLoader {
 
 
   @Override
-  public TestContext testContext(String path, JsonNode formatObj, Stage stage) throws IOException {
+  public TestContext testContext(String path, JsonNode formatObj, TestingStage stage)
+      throws IOException {
     if (formatObj.findValue(FORMAT) == null) {
       return null;
     } else {
@@ -59,34 +62,54 @@ public class XMLResourcebundleLoaderImpl extends ResourcebundleLoader {
       XMLTestContext testContext = new XMLTestContext();
       testContext.setFormat(FORMAT);
       testContext.setStage(stage);
-      JsonNode schemaPathListObj = formatObj.findValue("schemaPathList");
-      if (schemaPathListObj != null && schemaPathListObj.isArray()) {
-        Set<String> schemaPathList = new HashSet<String>();
-        Iterator<JsonNode> it = schemaPathListObj.iterator();
-        while (it.hasNext()) {
-          JsonNode node = it.next();
-          if (node.getTextValue() != null && !"".equals(node.getTextValue())) {
-            schemaPathList.add(SCHEMA_PATTERN + node.getTextValue());
-          }
-        }
-        testContext.setSchemaPathList(schemaPathList);
-      }
-
-      JsonNode schematronPathListObj = formatObj.findValue("schematronPathList");
-      if (schemaPathListObj != null && schemaPathListObj.isArray()) {
-        Set<String> schematronPathList = new HashSet<String>();
-        Iterator<JsonNode> it = schematronPathListObj.iterator();
-        while (it.hasNext()) {
-          JsonNode node = it.next();
-          if (node.getTextValue() != null && !"".equals(node.getTextValue())) {
-            schematronPathList.add(SCHEMATRON_PATTERN + node.getTextValue());
-          }
-        }
-        testContext.setSchematronPathList(schematronPathList);
-      }
+      testContext.setSchemaPathList(getSchemas(path, formatObj.findValue("schemaPathList")));
+      testContext.setSchematronPathList(getSchematrons(path,
+          formatObj.findValue("schematronPathList")));
       return testContext;
     }
   }
+
+  private Set<String> getSchemas(String path, JsonNode schemaPathListObj) throws IOException {
+    Set<String> schemaPathList = new HashSet<String>();
+    if (schemaPathListObj != null && schemaPathListObj.isArray()) {
+      Iterator<JsonNode> it = schemaPathListObj.iterator();
+      while (it.hasNext()) {
+        JsonNode node = it.next();
+        if (node.getTextValue() != null && !"".equals(node.getTextValue())) {
+          schemaPathList.add(SCHEMA_PATTERN + node.getTextValue());
+        }
+      }
+    }
+    List<Resource> specificSchemas = getResources(path + "*.xsd");
+    if (specificSchemas != null && !specificSchemas.isEmpty()) {
+      for (Resource schema : specificSchemas) {
+        schemaPathList.add(path + schema.getFilename());
+      }
+    }
+    return schemaPathList;
+  }
+
+  private Set<String> getSchematrons(String path, JsonNode schematronPathListObj)
+      throws IOException {
+    Set<String> schematronPathList = new HashSet<String>();
+    if (schematronPathListObj != null && schematronPathListObj.isArray()) {
+      Iterator<JsonNode> it = schematronPathListObj.iterator();
+      while (it.hasNext()) {
+        JsonNode node = it.next();
+        if (node.getTextValue() != null && !"".equals(node.getTextValue())) {
+          schematronPathList.add(SCHEMATRON_PATTERN + node.getTextValue());
+        }
+      }
+    }
+    List<Resource> specificSchematrons = getResources(path + "*.sch");
+    if (specificSchematrons != null && !specificSchematrons.isEmpty()) {
+      for (Resource schematron : specificSchematrons) {
+        schematronPathList.add(path + schematron.getFilename());
+      }
+    }
+    return schematronPathList;
+  }
+
 
   @Override
   public ProfileModel parseProfile(String integrationProfileXml, String conformanceProfileId,
