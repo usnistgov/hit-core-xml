@@ -19,6 +19,7 @@ import gov.nist.hit.core.domain.TestingStage;
 import gov.nist.hit.core.domain.VocabularyLibrary;
 import gov.nist.hit.core.service.ResourcebundleLoader;
 import gov.nist.hit.core.service.exception.ProfileParserException;
+import gov.nist.hit.core.service.util.FileUtil;
 import gov.nist.hit.core.xml.domain.XMLTestCaseDocument;
 import gov.nist.hit.core.xml.domain.XMLTestContext;
 
@@ -63,6 +64,9 @@ public class XMLResourcebundleLoaderImpl extends ResourcebundleLoader {
       XMLTestContext testContext = new XMLTestContext();
       testContext.setFormat(FORMAT);
       testContext.setStage(stage);
+
+      testContext.setMessage(message(FileUtil.getContent(getResource(path + "Message.xml"))));
+
       testContext.setSchemaPathList(getSchemas(path, formatObj.findValue("schemaPathList")));
       testContext.setSchematronPathList(getSchematrons(path,
           formatObj.findValue("schematronPathList")));
@@ -120,7 +124,7 @@ public class XMLResourcebundleLoaderImpl extends ResourcebundleLoader {
 
 
   @Override
-  protected VocabularyLibrary vocabLibrary(String content) throws JsonGenerationException,
+  public VocabularyLibrary vocabLibrary(String content) throws JsonGenerationException,
       JsonMappingException, IOException {
     throw new UnsupportedOperationException();
   }
