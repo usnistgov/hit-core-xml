@@ -11,13 +11,31 @@
  */
 package gov.nist.hit.core.service.xml;
 
+import gov.nist.healthcare.unified.enums.Context;
+import gov.nist.healthcare.unified.model.EnhancedReport;
+import gov.nist.healthcare.unified.proxy.ValidationProxy;
+import gov.nist.healthcare.unified.proxy.XMLValidationProxy;
 import gov.nist.hit.core.domain.MessageValidationCommand;
 import gov.nist.hit.core.domain.MessageValidationResult;
 import gov.nist.hit.core.domain.TestContext;
+import gov.nist.hit.core.service.exception.MessageException;
 import gov.nist.hit.core.service.exception.MessageValidationException;
+import gov.nist.hit.core.service.util.FileUtil;
+import gov.nist.hit.core.service.util.ResourcebundleHelper;
+import gov.nist.hit.core.xml.domain.XMLTestContext;
+import org.apache.commons.io.IOUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.core.io.Resource;
+
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class XMLMessageValidatorImpl extends XMLMessageValidator {
+
+  static final Logger logger = LoggerFactory.getLogger(XMLMessageValidatorImpl.class);
 
   public XMLMessageValidatorImpl() {
     super();
@@ -26,8 +44,50 @@ public class XMLMessageValidatorImpl extends XMLMessageValidator {
   @Override
   public MessageValidationResult validate(TestContext testContext, MessageValidationCommand command)
       throws MessageValidationException {
+    logger.info("Validating XML file");
+    try {
+      if (testContext instanceof XMLTestContext) {
+        XMLTestContext context = (XMLTestContext) testContext;
+        String title = command.getName();
+        String contextType = command.getContextType();
+        String message = getMessageContent(command);
+        ArrayList<String> schematrons = new ArrayList<>();
+        for(String schematronPath : context.getSchematronPathList()){
+          Resource resource =
+                  ResourcebundleHelper.getResource(schematronPath);
+          if (resource != null) {
+            String schematronContent = FileUtil.getContent(resource);
+            logger.info("schematron loaded " + schematronContent);
+            schematrons.add(schematronContent);
+          }
+        }
+        XMLValidationProxy vp = new XMLValidationProxy(title, "NIST", "1.0");
+        EnhancedReport report =vp.validate(message, null, schematrons, null, "ALL",Context.valueOf(contextType));
+        return new MessageValidationResult(report.to("json").toString(), report.render("iz-report",null));
+      } else {
+        throw new MessageValidationException(
+                "Invalid Context Provided. Expected Context is EDITestContext but found "
+                        + testContext.getClass().getSimpleName());
+      }
+//      Resource resource =
+//              ResourcebundleHelper.getResource("Global/Schematrons/schematron.sch");
+//      if (resource != null) {
+//        String res = FileUtil.getContent(resource);
+//        logger.info("resource content" + res);
+//      }
+    }catch (Exception e) {
+      throw new MessageValidationException(e);
+    }
     // TODO Auto-generated method stub
-    return new MessageValidationResult(null, null);
+//    return new MessageValidationResult(null, null);
   }
 
+
+  public static String getMessageContent(MessageValidationCommand command) throws MessageException {
+    String message = command.getContent();
+    if (message == null) {
+      throw new MessageException("No message provided");
+    }
+    return message;
+  }
 }
