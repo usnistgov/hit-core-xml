@@ -61,7 +61,7 @@ public class XMLMessageValidatorImpl extends XMLMessageValidator {
             schematrons.add(schematronContent);
           }
         }
-        XMLValidationProxy vp = new XMLValidationProxy(title, "NIST", "1.0");
+        XMLValidationProxy vp = new XMLValidationProxy(title, "NIST");
         EnhancedReport report =vp.validate(message, null, schematrons, null, "ALL",Context.valueOf(contextType));
         return new MessageValidationResult(report.to("json").toString(), report.render("iz-report",null));
       } else {
