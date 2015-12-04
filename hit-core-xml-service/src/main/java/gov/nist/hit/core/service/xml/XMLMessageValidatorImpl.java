@@ -57,7 +57,7 @@ public class XMLMessageValidatorImpl extends XMLMessageValidator {
                   ResourcebundleHelper.getResource(schematronPath);
           if (resource != null) {
             String schematronContent = FileUtil.getContent(resource);
-            logger.info("schematron loaded " + schematronContent);
+            logger.debug("schematron loaded " + schematronContent);
             schematrons.add(schematronContent);
           }
         }
