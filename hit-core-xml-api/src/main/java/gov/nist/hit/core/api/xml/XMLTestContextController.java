@@ -12,11 +12,10 @@
 
 package gov.nist.hit.core.api.xml;
 
-import gov.nist.hit.core.domain.MessageModel;
-import gov.nist.hit.core.domain.MessageParserCommand;
-import gov.nist.hit.core.domain.MessageValidationCommand;
-import gov.nist.hit.core.domain.MessageValidationResult;
+import gov.nist.hit.core.api.TestContextController;
+import gov.nist.hit.core.domain.*;
 import gov.nist.hit.core.repo.TestCaseRepository;
+import gov.nist.hit.core.service.*;
 import gov.nist.hit.core.service.exception.MessageException;
 import gov.nist.hit.core.service.exception.MessageParserException;
 import gov.nist.hit.core.service.exception.MessageValidationException;
@@ -25,15 +24,10 @@ import gov.nist.hit.core.service.xml.XMLMessageParser;
 import gov.nist.hit.core.service.xml.XMLMessageValidator;
 import gov.nist.hit.core.xml.domain.XMLTestContext;
 import gov.nist.hit.core.xml.repo.XMLTestContextRepository;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * @author Harold Affo (NIST)
@@ -42,7 +36,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RequestMapping("/xml/testcontext")
 @RestController
-public class XMLTestContextController {
+public class XMLTestContextController extends TestContextController {
 
   Logger logger = LoggerFactory.getLogger(XMLTestContextController.class);
 
@@ -57,6 +51,32 @@ public class XMLTestContextController {
 
   @Autowired
   protected TestCaseRepository testCaseRepository;
+
+  @Autowired
+  private UserService userService;
+
+  @Autowired
+  private TestStepService testStepService;
+
+  @Override
+  public MessageValidator getMessageValidator() {
+    return null;
+  }
+
+  @Override
+  public MessageParser getMessageParser() {
+    return null;
+  }
+
+  @Override
+  public TestContext getTestContext(Long aLong) {
+    return null;
+  }
+
+  @Override
+  public ValidationReportConverter getValidatioReportConverter() {
+    return null;
+  }
 
   @RequestMapping(value = "/{domain}/{testContextId}")
   public XMLTestContext testContext(@PathVariable final Long testContextId) {
@@ -78,15 +98,8 @@ public class XMLTestContextController {
 
   @RequestMapping(value = "/{testContextId}/validateMessage", method = RequestMethod.POST)
   public MessageValidationResult validate(@PathVariable final Long testContextId,
-      @RequestBody final MessageValidationCommand command) throws MessageValidationException {
-    try {
-      XMLTestContext testContext = testContext(testContextId);
-      return messageValidator.validate(testContext, command);
-    } catch (MessageValidationException e) {
-      throw new MessageValidationException(e.getMessage());
-    } catch (Exception e) {
-      throw new MessageValidationException(e.getMessage());
-    }
+                                          @RequestBody final MessageValidationCommand command) throws MessageValidationException {
+    return messageValidator.validate(testContext(testContextId), command);
   }
 
   public static String getMessageContent(MessageValidationCommand command) throws MessageException {
