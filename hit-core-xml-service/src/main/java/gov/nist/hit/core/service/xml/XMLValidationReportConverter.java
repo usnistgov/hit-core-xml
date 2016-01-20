@@ -11,13 +11,29 @@
  */
 package gov.nist.hit.core.service.xml;
 
+import gov.nist.healthcare.unified.converters.XMLConverter;
+import gov.nist.healthcare.unified.model.EnhancedReport;
+import gov.nist.hit.core.service.ValidationReportConverter;
+import gov.nist.hit.core.service.exception.ValidationReportException;
 
+import java.io.IOException;
+
+import org.apache.commons.io.IOUtils;
 
 /**
  * @author Harold Affo (NIST)
  */
 
-public class XMLValidationReportGeneratorImpl extends XMLValidationReportGenerator {
+public abstract class XMLValidationReportConverter implements ValidationReportConverter {
 
+  /**
+   * TODO: Implement the method
+   */
+  @Override
+  public String toXML(String json) throws Exception {
+    EnhancedReport report = EnhancedReport.from("json", json);
+    String xml = new XMLConverter().convert(report);
+    return xml;
+  }
 
 }

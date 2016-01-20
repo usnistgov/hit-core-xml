@@ -22,6 +22,8 @@ import gov.nist.hit.core.service.exception.MessageValidationException;
 import gov.nist.hit.core.service.exception.TestCaseException;
 import gov.nist.hit.core.service.xml.XMLMessageParser;
 import gov.nist.hit.core.service.xml.XMLMessageValidator;
+import gov.nist.hit.core.service.xml.XMLValidationReportConverter;
+import gov.nist.hit.core.service.xml.XMLValidationReportConverterImpl;
 import gov.nist.hit.core.xml.domain.XMLTestContext;
 import gov.nist.hit.core.xml.repo.XMLTestContextRepository;
 import org.slf4j.Logger;
@@ -40,76 +42,36 @@ public class XMLTestContextController extends TestContextController {
 
   Logger logger = LoggerFactory.getLogger(XMLTestContextController.class);
 
-  @Autowired
-  private XMLTestContextRepository testContextRepository;
+@Autowired
+public XMLValidationReportConverter xmlValidationReportConverter;
+
+@Autowired
+public XMLMessageValidator xmlMessageValidator;
 
   @Autowired
-  private XMLMessageValidator messageValidator;
+  public XMLMessageParser xmlMessageParser;
 
   @Autowired
-  private XMLMessageParser messageParser;
-
-  @Autowired
-  protected TestCaseRepository testCaseRepository;
-
-  @Autowired
-  private UserService userService;
-
-  @Autowired
-  private TestStepService testStepService;
+  public XMLTestContextRepository xmlTestContextRepository;
 
   @Override
   public MessageValidator getMessageValidator() {
-    return null;
+    return xmlMessageValidator;
   }
 
   @Override
   public MessageParser getMessageParser() {
-    return null;
+    return xmlMessageParser;
   }
 
   @Override
   public TestContext getTestContext(Long aLong) {
-    return null;
+    return xmlTestContextRepository.findOne(aLong);
   }
 
   @Override
   public ValidationReportConverter getValidatioReportConverter() {
-    return null;
+    return xmlValidationReportConverter;
   }
-
-  @RequestMapping(value = "/{domain}/{testContextId}")
-  public XMLTestContext testContext(@PathVariable final Long testContextId) {
-    logger.info("Fetching testContext with id=" + testContextId);
-    XMLTestContext testContext = testContextRepository.findOne(testContextId);
-    if (testContext == null) {
-      throw new TestCaseException("No test context available with id=" + testContextId);
-    }
-    return testContext;
-  }
-
-  @RequestMapping(value = "/{testContextId}/parseMessage", method = RequestMethod.POST)
-  public MessageModel parse(@PathVariable final Long testContextId,
-      @RequestBody final MessageParserCommand command) throws MessageParserException {
-    logger.info("Parsing xml message");
-    XMLTestContext testContext = testContext(testContextId);
-    return messageParser.parse(testContext, command);
-  }
-
-  @RequestMapping(value = "/{testContextId}/validateMessage", method = RequestMethod.POST)
-  public MessageValidationResult validate(@PathVariable final Long testContextId,
-                                          @RequestBody final MessageValidationCommand command) throws MessageValidationException {
-    return messageValidator.validate(testContext(testContextId), command);
-  }
-
-  public static String getMessageContent(MessageValidationCommand command) throws MessageException {
-    String message = command.getContent();
-    if (message == null) {
-      throw new MessageException("No message provided");
-    }
-    return message;
-  }
-
-
 
 }
