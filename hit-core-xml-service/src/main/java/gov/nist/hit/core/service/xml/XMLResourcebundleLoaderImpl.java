@@ -29,11 +29,13 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import org.codehaus.jackson.JsonGenerationException;
-import org.codehaus.jackson.JsonNode;
-import org.codehaus.jackson.map.JsonMappingException;
+import gov.nist.hit.core.xml.repo.XMLTestContextRepository;
+import com.fasterxml.jackson.core.JsonGenerationException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 
 public class XMLResourcebundleLoaderImpl extends ResourcebundleLoader {
@@ -44,11 +46,27 @@ public class XMLResourcebundleLoaderImpl extends ResourcebundleLoader {
   static final String FORMAT = "xml";
 
 
+  @Autowired
+  XMLTestContextRepository testContextRepository;
+
+
   public XMLResourcebundleLoaderImpl() {}
 
 
   @Override
   public TestCaseDocument generateTestCaseDocument(TestContext c) throws IOException {
+    XMLTestCaseDocument doc = new XMLTestCaseDocument();
+    if (c != null) {
+      XMLTestContext context = testContextRepository.findOne(c.getId());
+      doc.setExMsgPresent(context.getMessage() != null && context.getMessage().getContent() != null);
+      /*doc.setXmlConfProfilePresent(context.get != null
+              && context.getConformanceProfile().getJson() != null);
+      doc.setXmlValueSetLibraryPresent(context.getVocabularyLibrary() != null
+              && context.getVocabularyLibrary().getJson() != null);
+      doc.setXmlConstraintPresent(context.getAddditionalConstraints() != null && context.getAddditionalConstraints().getXml() != null);
+      ObjectMapper mapper = new ObjectMapper();
+      logger.info("TestCaseDocument : "+ mapper.writeValueAsString(doc));*/
+    }
     return new XMLTestCaseDocument();
   }
 
@@ -80,8 +98,8 @@ public class XMLResourcebundleLoaderImpl extends ResourcebundleLoader {
       Iterator<JsonNode> it = schemaPathListObj.iterator();
       while (it.hasNext()) {
         JsonNode node = it.next();
-        if (node.getTextValue() != null && !"".equals(node.getTextValue())) {
-          schemaPathList.add(SCHEMA_PATTERN + node.getTextValue());
+        if (node.textValue() != null && !"".equals(node.textValue())) {
+          schemaPathList.add(SCHEMA_PATTERN + node.textValue());
         }
       }
     }
@@ -101,8 +119,8 @@ public class XMLResourcebundleLoaderImpl extends ResourcebundleLoader {
       Iterator<JsonNode> it = schematronPathListObj.iterator();
       while (it.hasNext()) {
         JsonNode node = it.next();
-        if (node.getTextValue() != null && !"".equals(node.getTextValue())) {
-          schematronPathList.add(SCHEMATRON_PATTERN + node.getTextValue());
+        if (node.textValue() != null && !"".equals(node.textValue())) {
+          schematronPathList.add(SCHEMATRON_PATTERN + node.textValue());
         }
       }
     }

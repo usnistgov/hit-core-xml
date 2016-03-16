@@ -10,6 +10,10 @@ public class XMLTestCaseDocument extends TestCaseDocument implements Serializabl
    * 
    */
   private static final long serialVersionUID = 1L;
+  protected boolean exMsgPresent;
+  protected boolean xmlConfProfilePresent;
+  protected boolean xmlValueSetLibraryPresent;
+  protected boolean xmlConstraintPresent;
 
 
   public XMLTestCaseDocument() {
@@ -17,5 +21,36 @@ public class XMLTestCaseDocument extends TestCaseDocument implements Serializabl
     this.format = "xml";
   }
 
+  public boolean isExMsgPresent() {
+    return exMsgPresent;
+  }
+
+  public void setExMsgPresent(boolean exMsgPresent) {
+    this.exMsgPresent = exMsgPresent;
+  }
+
+  public boolean isXmlConfProfilePresent() {
+    return xmlConfProfilePresent;
+  }
+
+  public void setXmlConfProfilePresent(boolean xmlConfProfilePresent) {
+    this.xmlConfProfilePresent = xmlConfProfilePresent;
+  }
+
+  public boolean isXmlValueSetLibraryPresent() {
+    return xmlValueSetLibraryPresent;
+  }
+
+  public void setXmlValueSetLibraryPresent(boolean xmlValueSetLibraryPresent) {
+    this.xmlValueSetLibraryPresent = xmlValueSetLibraryPresent;
+  }
+
+  public boolean isXmlConstraintPresent() {
+    return xmlConstraintPresent;
+  }
+
+  public void setXmlConstraintPresent(boolean xmlConstraintsPresent) {
+    this.xmlConstraintPresent = xmlConstraintsPresent;
+  }
 
 }

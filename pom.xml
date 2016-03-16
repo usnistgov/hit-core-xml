@@ -15,24 +15,25 @@
 	</modules>
 
 	<properties>
+        <hit-core.version>1.0.5-SNAPSHOT</hit-core.version>
  	</properties>
 
 	<dependencies>		
 		<dependency>
 			<groupId>gov.nist.hit.core</groupId>
 			<artifactId>hit-core-service</artifactId>
-			<version>1.0.1-SNAPSHOT</version>
+			<version>${hit-core.version}</version>
 		</dependency>
  		
 		<dependency>
 			<groupId>gov.nist.hit.core</groupId>
 			<artifactId>hit-core-transport</artifactId>
-			<version>1.0.1-SNAPSHOT</version>
+			<version>${hit-core.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>gov.nist.hit.core</groupId>
 			<artifactId>hit-core-api</artifactId>
-			<version>1.0.1-SNAPSHOT</version>
+			<version>${hit-core.version}</version>
 		</dependency>
 
 	</dependencies>
