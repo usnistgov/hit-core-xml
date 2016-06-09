@@ -79,9 +79,13 @@ public class XMLResourcebundleLoaderImpl extends ResourcebundleLoader {
     } else {
       logger.debug("processing xml testContext");
       formatObj = formatObj.findValue(FORMAT);
+      JsonNode type = formatObj.findValue("messageId");
       XMLTestContext testContext = new XMLTestContext();
       testContext.setFormat(FORMAT);
       testContext.setStage(stage);
+      if(type!=null) {
+        testContext.setType(type.textValue());
+      }
 
       testContext.setMessage(message(FileUtil.getContent(getResource(path + "Message.xml"))));
 
