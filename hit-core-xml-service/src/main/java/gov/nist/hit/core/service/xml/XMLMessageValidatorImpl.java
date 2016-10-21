@@ -22,8 +22,11 @@ import gov.nist.hit.core.service.exception.MessageException;
 import gov.nist.hit.core.service.exception.MessageValidationException;
 import gov.nist.hit.core.service.util.FileUtil;
 import gov.nist.hit.core.service.util.ResourcebundleHelper;
+import gov.nist.hit.core.service.util.ValidationLogUtil;
 import gov.nist.hit.core.xml.domain.XMLTestContext;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
@@ -36,6 +39,8 @@ import java.util.List;
 public class XMLMessageValidatorImpl extends XMLMessageValidator {
 
   static final Logger logger = LoggerFactory.getLogger(XMLMessageValidatorImpl.class);
+
+  private static Log statLog = LogFactory.getLog("StatLog");
 
   public XMLMessageValidatorImpl() {
     super();
@@ -63,6 +68,10 @@ public class XMLMessageValidatorImpl extends XMLMessageValidator {
         }
         XMLValidationProxy vp = new XMLValidationProxy(title, "NIST");
         EnhancedReport report =vp.validate(message, null, schematrons, null, "ALL",Context.valueOf(contextType));
+
+        String validationLog = ValidationLogUtil.generateValidationLog(testContext, report);
+        statLog.info(validationLog.toString());
+
         return new MessageValidationResult(report.to("json").toString(), report.render("iz-report",null));
       } else {
         throw new MessageValidationException(
