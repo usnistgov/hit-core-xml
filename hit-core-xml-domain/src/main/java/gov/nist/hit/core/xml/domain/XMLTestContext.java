@@ -24,8 +24,6 @@ public class XMLTestContext extends TestContext {
   @Column(name = "schematronPathList")
   protected Set<String> schematronPathList = new HashSet<String>();
 
-  protected String type;
-
   public Set<String> getSchemaPathList() {
     return schemaPathList;
   }
@@ -42,11 +40,4 @@ public class XMLTestContext extends TestContext {
     this.schematronPathList = schematronPathList;
   }
 
-  public String getType() {
-    return type;
-  }
-
-  public void setType(String type) {
-    this.type = type;
-  }
 }
