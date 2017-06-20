@@ -224,7 +224,7 @@ public class XMLResourceLoaderImpl extends ResourceLoader {
 
 
   @Override
-  public TestContext testContext(String path, JsonNode formatObj, TestingStage stage)
+  public TestContext testContext(String path, JsonNode formatObj, TestingStage stage, TestStep testStep)
       throws IOException {
     if (formatObj.findValue(FORMAT) == null) {
       return null;
@@ -238,7 +238,7 @@ public class XMLResourceLoaderImpl extends ResourceLoader {
       if(type!=null) {
         testContext.setType(type.textValue());
       }
-
+      testContext.setTestStep(testStep);
       testContext.setMessage(message(FileUtil.getContent(getResource(path + "Message.xml"))));
 
       testContext.setSchemaPathList(getSchemas(path, formatObj.findValue("schemaPathList")));
