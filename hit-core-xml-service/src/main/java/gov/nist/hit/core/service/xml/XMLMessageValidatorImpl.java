@@ -31,7 +31,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
 
+import javax.xml.XMLConstants;
+import javax.xml.transform.Source;
+import javax.xml.transform.stream.StreamSource;
+import javax.xml.validation.Schema;
+import javax.xml.validation.SchemaFactory;
 import java.io.InputStream;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -63,11 +69,25 @@ public class XMLMessageValidatorImpl extends XMLMessageValidator {
           if (resource != null) {
             String schematronContent = FileUtil.getContent(resource);
             logger.debug("schematron loaded " + schematronContent);
-            schematrons.add(schematronContent);
+            if(schematronContent != null && !schematronContent.isEmpty()) {
+              schematrons.add(schematronContent);
+            }
           }
         }
+        SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+
+        List<Source> sources = new ArrayList<>();
+        for(String schemaPath : context.getSchemaPathList()){
+          Resource schemaFile = ResourcebundleHelper.getResource(schemaPath);
+          if(schemaFile != null) {
+            sources.add(new StreamSource(schemaFile.getInputStream()));
+          } else {
+            logger.error("Unable to load the schema "+schemaPath);
+          }
+        }
+        Schema schema = schemaFactory.newSchema(sources.toArray(new Source[sources.size()]));
         XMLValidationProxy vp = new XMLValidationProxy(title, "NIST");
-        EnhancedReport report =vp.validate(message, null, schematrons, null, "ALL",Context.valueOf(contextType));
+        EnhancedReport report =vp.validate(message, schema, schematrons, null, "ALL",Context.valueOf(contextType));
 
         String validationLog = ValidationLogUtil.generateValidationLog(testContext, report);
         statLog.info(validationLog.toString());
