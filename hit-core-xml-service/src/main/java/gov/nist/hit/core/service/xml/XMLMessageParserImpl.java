@@ -24,7 +24,7 @@ public class XMLMessageParserImpl extends XMLMessageParser {
 
   public XMLMessageParserImpl() {
     super();
-  }
+  } 
 
 
 
