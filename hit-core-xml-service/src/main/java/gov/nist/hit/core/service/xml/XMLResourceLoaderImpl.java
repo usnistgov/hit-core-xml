@@ -30,8 +30,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
+import org.springframework.stereotype.Service;
 
-public class XMLResourceLoaderImpl extends ResourceLoader {
+public class XMLResourceLoaderImpl extends XMLResourceLoader {
 
   static final Logger logger = LoggerFactory.getLogger(XMLResourceLoaderImpl.class);
   final static String SCHEMA_PATTERN = "Global/Schemas/";
@@ -45,12 +46,12 @@ public class XMLResourceLoaderImpl extends ResourceLoader {
 
   public XMLResourceLoaderImpl() {}
 
-  @Override public List<ResourceUploadStatus> addOrReplaceValueSet() throws IOException {
+  @Override public List<ResourceUploadStatus> addOrReplaceValueSet(String rootPath) throws IOException {
     System.out.println("AddOrReplace VS");
 
     List<Resource> resources;
     try {
-      resources = this.getApiResources("*.xml");
+      resources = this.getApiResources("*.xml",rootPath);
       if (resources == null || resources.isEmpty()) {
         ResourceUploadStatus result = new ResourceUploadStatus();
         result.setType(ResourceType.VALUESETLIBRARY);
@@ -98,12 +99,12 @@ public class XMLResourceLoaderImpl extends ResourceLoader {
   }
 
   @Override
-  public List<ResourceUploadStatus> addOrReplaceConstraints() {
+  public List<ResourceUploadStatus> addOrReplaceConstraints(String rootPath) {
     System.out.println("AddOrReplace Constraints");
 
     List<Resource> resources;
     try {
-      resources = this.getApiResources("*.xml");
+      resources = this.getApiResources("*.xml",rootPath);
       if (resources == null || resources.isEmpty()) {
         ResourceUploadStatus result = new ResourceUploadStatus();
         result.setType(ResourceType.CONSTRAINTS);
@@ -152,12 +153,12 @@ public class XMLResourceLoaderImpl extends ResourceLoader {
   }
 
   @Override
-  public List<ResourceUploadStatus> addOrReplaceIntegrationProfile() {
+  public List<ResourceUploadStatus> addOrReplaceIntegrationProfile(String rootPath) {
     System.out.println("AddOrReplace integration profile");
 
     List<Resource> resources;
     try {
-      resources = this.getApiResources("*.xml");
+      resources = this.getApiResources("*.xml",rootPath);
       if (resources == null || resources.isEmpty()) {
         ResourceUploadStatus result = new ResourceUploadStatus();
         result.setType(ResourceType.PROFILE);
@@ -223,32 +224,30 @@ public class XMLResourceLoaderImpl extends ResourceLoader {
   }
 
 
-  @Override
-  public TestContext testContext(String path, JsonNode formatObj, TestingStage stage, TestStep testStep)
+  @Override public TestContext testContext(String location, JsonNode parentOb, TestingStage stage, String rootPath)
       throws IOException {
-    if (formatObj.findValue(FORMAT) == null) {
+    if (parentOb.findValue(FORMAT) == null) {
       return null;
     } else {
       logger.debug("processing xml testContext");
-      formatObj = formatObj.findValue(FORMAT);
-      JsonNode type = formatObj.findValue("messageId");
+      parentOb = parentOb.findValue(FORMAT);
+      JsonNode type = parentOb.findValue("messageId");
       XMLTestContext testContext = new XMLTestContext();
       testContext.setFormat(FORMAT);
       testContext.setStage(stage);
       if(type!=null) {
         testContext.setType(type.textValue());
       }
-      testContext.setTestStep(testStep);
-      testContext.setMessage(message(FileUtil.getContent(getResource(path + "Message.xml"))));
+      testContext.setMessage(message(FileUtil.getContent(getResource(location + "Message.xml",rootPath))));
 
-      testContext.setSchemaPathList(getSchemas(path, formatObj.findValue("schemaPathList")));
-      testContext.setSchematronPathList(getSchematrons(path,
-          formatObj.findValue("schematronPathList")));
+      testContext.setSchemaPathList(getSchemas(location, parentOb.findValue("schemaPathList"),rootPath));
+      testContext.setSchematronPathList(getSchematrons(location,
+          parentOb.findValue("schematronPathList"),rootPath));
       return testContext;
     }
   }
 
-  private Set<String> getSchemas(String path, JsonNode schemaPathListObj) throws IOException {
+  private Set<String> getSchemas(String path, JsonNode schemaPathListObj, String rootPath) throws IOException {
     Set<String> schemaPathList = new HashSet<String>();
     if (schemaPathListObj != null && schemaPathListObj.isArray()) {
       Iterator<JsonNode> it = schemaPathListObj.iterator();
@@ -259,7 +258,7 @@ public class XMLResourceLoaderImpl extends ResourceLoader {
         }
       }
     }
-    List<Resource> specificSchemas = getResources(path + "*.xsd");
+    List<Resource> specificSchemas = getResources(path + "*.xsd",rootPath);
     if (specificSchemas != null && !specificSchemas.isEmpty()) {
       for (Resource schema : specificSchemas) {
         schemaPathList.add(path + schema.getFilename());
@@ -268,7 +267,7 @@ public class XMLResourceLoaderImpl extends ResourceLoader {
     return schemaPathList;
   }
 
-  private Set<String> getSchematrons(String path, JsonNode schematronPathListObj)
+  private Set<String> getSchematrons(String path, JsonNode schematronPathListObj, String rootPath)
       throws IOException {
     Set<String> schematronPathList = new HashSet<String>();
     if (schematronPathListObj != null && schematronPathListObj.isArray()) {
@@ -280,7 +279,7 @@ public class XMLResourceLoaderImpl extends ResourceLoader {
         }
       }
     }
-    List<Resource> specificSchematrons = getResources(path + "*.sch");
+    List<Resource> specificSchematrons = getResources(path + "*.sch",rootPath);
     if (specificSchematrons != null && !specificSchematrons.isEmpty()) {
       for (Resource schematron : specificSchematrons) {
         schematronPathList.add(path + schematron.getFilename());

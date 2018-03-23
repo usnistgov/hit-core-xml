@@ -13,7 +13,6 @@ package gov.nist.hit.core.service.xml;
 
 import gov.nist.healthcare.unified.enums.Context;
 import gov.nist.healthcare.unified.model.EnhancedReport;
-import gov.nist.healthcare.unified.proxy.ValidationProxy;
 import gov.nist.healthcare.unified.proxy.XMLValidationProxy;
 import gov.nist.hit.core.domain.MessageValidationCommand;
 import gov.nist.hit.core.domain.MessageValidationResult;
@@ -24,7 +23,6 @@ import gov.nist.hit.core.service.util.FileUtil;
 import gov.nist.hit.core.service.util.ResourcebundleHelper;
 import gov.nist.hit.core.service.util.ValidationLogUtil;
 import gov.nist.hit.core.xml.domain.XMLTestContext;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.slf4j.Logger;
@@ -32,11 +30,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
 
 import javax.xml.XMLConstants;
-import javax.xml.transform.Source;
-import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
-import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -46,7 +41,29 @@ public class XMLMessageValidatorImpl extends XMLMessageValidator {
 
   static final Logger logger = LoggerFactory.getLogger(XMLMessageValidatorImpl.class);
 
+  final static String SCHEMA_PATTERN = "Global/Schemas/";
+
   private static Log statLog = LogFactory.getLog("StatLog");
+
+  private String organizationName;
+
+  @Override
+  public String getProviderName() {
+    return organizationName != null ? organizationName : "NIST";
+  }
+
+  @Override
+  public String getValidationServiceName() {
+    return getProviderName() + " Validation Tool";
+  }
+
+  public String getOrganizationName() {
+    return organizationName;
+  }
+
+  public void setOrganizationName(String organizationName) {
+    this.organizationName = organizationName;
+  }
 
   public XMLMessageValidatorImpl() {
     super();
@@ -57,43 +74,54 @@ public class XMLMessageValidatorImpl extends XMLMessageValidator {
       throws MessageValidationException {
     logger.info("Validating XML file");
     try {
-      if (testContext instanceof XMLTestContext) {
+      if (testContext != null && testContext instanceof XMLTestContext) {
         XMLTestContext context = (XMLTestContext) testContext;
         String title = command.getName();
         String contextType = command.getContextType();
         String message = getMessageContent(command);
+        logger.info("Validating file with context "+context.getId()+", context = "+contextType+", title = "+title);
         ArrayList<String> schematrons = new ArrayList<>();
+        logger.info("Loading the schematron files: "+context.getSchematronPathList().toString());
         for(String schematronPath : context.getSchematronPathList()){
           Resource resource =
                   ResourcebundleHelper.getResource(schematronPath);
           if (resource != null) {
             String schematronContent = FileUtil.getContent(resource);
-            logger.debug("schematron loaded " + schematronContent);
+            logger.info("Schematron loaded " + schematronPath);
             if(schematronContent != null && !schematronContent.isEmpty()) {
               schematrons.add(schematronContent);
             }
-          }
-        }
-        SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-
-        List<Source> sources = new ArrayList<>();
-        for(String schemaPath : context.getSchemaPathList()){
-          Resource schemaFile = ResourcebundleHelper.getResource(schemaPath);
-          if(schemaFile != null) {
-            sources.add(new StreamSource(schemaFile.getInputStream()));
           } else {
-            logger.error("Unable to load the schema "+schemaPath);
+            logger.error("Unable to load the schematron "+schematronPath);
           }
         }
-        Schema schema = schemaFactory.newSchema(sources.toArray(new Source[sources.size()]));
+        logger.info("Loading the schema files: "+context.getSchemaPathList().toString());
+        SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+        List<Schema> schemas = new ArrayList<>();
+        for(String schemaPath : context.getSchemaPathList()){
+          Resource schemaResource = ResourcebundleHelper.getResource(schemaPath);
+          if(schemaResource != null) {
+            URL schemaURL = schemaResource.getURL();
+            if (schemaURL != null) {
+              logger.info("Schema loaded: " + schemaPath);
+              Schema schema = schemaFactory.newSchema(schemaURL);
+              schemas.add(schema);
+            }
+          } else {
+            logger.error("Unable to load the schema " + schemaPath);
+          }
+        }
         XMLValidationProxy vp = new XMLValidationProxy(title, "NIST");
-        EnhancedReport report =vp.validate(message, schema, schematrons, null, "ALL",Context.valueOf(contextType));
-
+        logger.info("Sending the message to the validation engine");
+        EnhancedReport report =vp.validate(message, schemas, schematrons, "ALL",Context.valueOf(contextType));
+        logger.info("Generating the validation logs");
         String validationLog = ValidationLogUtil.generateValidationLog(testContext, report);
         statLog.info(validationLog.toString());
-
         return new MessageValidationResult(report.to("json").toString(), report.render("iz-report",null));
       } else {
+        if(testContext == null) {
+          logger.error("Test Context is null");
+        }
         throw new MessageValidationException(
                 "Invalid Context Provided. Expected Context is EDITestContext but found "
                         + testContext.getClass().getSimpleName());

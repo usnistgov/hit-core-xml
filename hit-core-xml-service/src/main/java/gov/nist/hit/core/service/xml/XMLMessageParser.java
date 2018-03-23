@@ -13,7 +13,6 @@ package gov.nist.hit.core.service.xml;
 
 import gov.nist.hit.core.domain.MessageElement;
 import gov.nist.hit.core.domain.MessageModel;
-import gov.nist.hit.core.domain.XMLMessageElementData;
 import gov.nist.hit.core.domain.util.XmlUtil;
 import gov.nist.hit.core.service.MessageParser;
 import gov.nist.hit.core.service.exception.MessageParserException;
@@ -23,6 +22,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import gov.nist.hit.core.xml.domain.XMLMessageElementData;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
