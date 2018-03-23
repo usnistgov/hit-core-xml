@@ -17,6 +17,7 @@ import gov.nist.hit.core.domain.util.XmlUtil;
 import gov.nist.hit.core.service.MessageParser;
 import gov.nist.hit.core.service.exception.MessageParserException;
 import gov.nist.hit.core.service.exception.XmlParserException;
+import gov.nist.hit.core.xml.domain.XMLMessageElementData;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -27,7 +28,7 @@ import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
 
-
+ 
 public abstract class XMLMessageParser implements MessageParser {
 
   public MessageModel parse(String xml) throws MessageParserException {
