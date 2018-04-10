@@ -56,7 +56,7 @@
  		<dependency>
 			<groupId>gov.nist.healthcare.hl7.v2.unifiedreport</groupId>
 			<artifactId>validation-proxy</artifactId>
-			<version>1.0.4-N</version>
+			<version>1.0.7</version>
 		</dependency>
 			 
 	</dependencies>

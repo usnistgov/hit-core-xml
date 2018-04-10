@@ -46,7 +46,7 @@ public class XMLResourceLoaderImpl extends XMLResourceLoader {
 
   public XMLResourceLoaderImpl() {}
 
-  @Override public List<ResourceUploadStatus> addOrReplaceValueSet(String rootPath) throws IOException {
+  @Override public List<ResourceUploadStatus> addOrReplaceValueSet(String rootPath,String domain,TestScope scope, String authorUsername, boolean preloaded) throws IOException {
     System.out.println("AddOrReplace VS");
 
     List<Resource> resources;
@@ -74,7 +74,7 @@ public class XMLResourceLoaderImpl extends XMLResourceLoader {
       result.setType(ResourceType.VALUESETLIBRARY);
       String content = FileUtil.getContent(resource);
       try {
-        VocabularyLibrary vocabLibrary = vocabLibrary(content);
+        VocabularyLibrary vocabLibrary = vocabLibrary(content,domain,scope, authorUsername,preloaded);
         result.setId(vocabLibrary.getSourceId());
         VocabularyLibrary exist = this.getVocabularyLibrary(vocabLibrary.getSourceId());
         if (exist != null) {
@@ -99,7 +99,7 @@ public class XMLResourceLoaderImpl extends XMLResourceLoader {
   }
 
   @Override
-  public List<ResourceUploadStatus> addOrReplaceConstraints(String rootPath) {
+  public List<ResourceUploadStatus> addOrReplaceConstraints(String rootPath,String domain, TestScope scope, String authorUsername, boolean preloaded) {
     System.out.println("AddOrReplace Constraints");
 
     List<Resource> resources;
@@ -127,7 +127,7 @@ public class XMLResourceLoaderImpl extends XMLResourceLoader {
       result.setType(ResourceType.CONSTRAINTS);
       String content = FileUtil.getContent(resource);
       try {
-        Constraints constraint = constraint(content);
+        Constraints constraint = constraint(content,domain,scope, authorUsername, preloaded);
         result.setId(constraint.getSourceId());
         Constraints exist = this.getConstraints(constraint.getSourceId());
         if (exist != null) {
@@ -153,7 +153,7 @@ public class XMLResourceLoaderImpl extends XMLResourceLoader {
   }
 
   @Override
-  public List<ResourceUploadStatus> addOrReplaceIntegrationProfile(String rootPath) {
+  public List<ResourceUploadStatus> addOrReplaceIntegrationProfile(String rootPath,String domain, TestScope scope, String authorUsername, boolean preloaded) {
     System.out.println("AddOrReplace integration profile");
 
     List<Resource> resources;
@@ -180,7 +180,7 @@ public class XMLResourceLoaderImpl extends XMLResourceLoader {
       result.setType(ResourceType.PROFILE);
       String content = FileUtil.getContent(resource);
       try {
-        IntegrationProfile integrationP = integrationProfile(content);
+        IntegrationProfile integrationP = integrationProfile(content,domain,scope, authorUsername, preloaded);
         result.setId(integrationP.getSourceId());
         IntegrationProfile exist = this.integrationProfileRepository
             .findBySourceId(integrationP.getSourceId());
@@ -224,7 +224,7 @@ public class XMLResourceLoaderImpl extends XMLResourceLoader {
   }
 
 
-  @Override public TestContext testContext(String location, JsonNode parentOb, TestingStage stage, String rootPath)
+  @Override public TestContext testContext(String location, JsonNode parentOb, TestingStage stage, String rootPath,String domain, TestScope scope, String authorUsername, boolean preloaded)
       throws IOException {
     if (parentOb.findValue(FORMAT) == null) {
       return null;
@@ -235,10 +235,14 @@ public class XMLResourceLoaderImpl extends XMLResourceLoader {
       XMLTestContext testContext = new XMLTestContext();
       testContext.setFormat(FORMAT);
       testContext.setStage(stage);
+      testContext.setDomain(domain);
+      testContext.setScope(scope);
+      testContext.setAuthorUsername(authorUsername);
+      testContext.setPreloaded(preloaded);
       if(type!=null) {
         testContext.setType(type.textValue());
       }
-      testContext.setMessage(message(FileUtil.getContent(getResource(location + "Message.xml",rootPath))));
+      testContext.setMessage(message(FileUtil.getContent(getResource(location + "Message.xml",rootPath)),domain, scope, authorUsername, preloaded));
 
       testContext.setSchemaPathList(getSchemas(location, parentOb.findValue("schemaPathList"),rootPath));
       testContext.setSchematronPathList(getSchematrons(location,
@@ -297,7 +301,7 @@ public class XMLResourceLoaderImpl extends XMLResourceLoader {
 
 
   @Override
-  public VocabularyLibrary vocabLibrary(String content) throws JsonGenerationException,
+  public VocabularyLibrary vocabLibrary(String content,String domain, TestScope scope, String authorUsername, boolean preloaded) throws JsonGenerationException,
       JsonMappingException, IOException {
     throw new UnsupportedOperationException();
   }
