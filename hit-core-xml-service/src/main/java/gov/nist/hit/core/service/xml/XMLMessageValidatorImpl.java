@@ -17,6 +17,8 @@ import gov.nist.healthcare.unified.proxy.XMLValidationProxy;
 import gov.nist.hit.core.domain.MessageValidationCommand;
 import gov.nist.hit.core.domain.MessageValidationResult;
 import gov.nist.hit.core.domain.TestContext;
+import gov.nist.hit.core.domain.log.ValidationLog;
+import gov.nist.hit.core.service.ValidationLogService;
 import gov.nist.hit.core.service.exception.MessageException;
 import gov.nist.hit.core.service.exception.MessageValidationException;
 import gov.nist.hit.core.service.util.FileUtil;
@@ -27,6 +29,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 
 import javax.xml.XMLConstants;
@@ -46,6 +49,10 @@ public class XMLMessageValidatorImpl extends XMLMessageValidator {
   private static Log statLog = LogFactory.getLog("StatLog");
 
   private String organizationName;
+  
+  @Autowired
+  private ValidationLogService validationLogService;
+  
 
   @Override
   public String getProviderName() {
@@ -114,9 +121,7 @@ public class XMLMessageValidatorImpl extends XMLMessageValidator {
         XMLValidationProxy vp = new XMLValidationProxy(title, "NIST");
         logger.info("Sending the message to the validation engine");
         EnhancedReport report =vp.validate(message, schemas, schematrons, "ALL",Context.valueOf(contextType));
-        logger.info("Generating the validation logs");
-        String validationLog = ValidationLogUtil.generateValidationLog(testContext, report);
-        statLog.info(validationLog.toString());
+        validationLogService.generateAndSave(command.getUserId(), testContext, report);
         return new MessageValidationResult(report.to("json").toString(), report.render("iz-report",null));
       } else {
         if(testContext == null) {
@@ -147,4 +152,16 @@ public class XMLMessageValidatorImpl extends XMLMessageValidator {
     }
     return message;
   }
+
+public ValidationLogService getValidationLogService() {
+	return validationLogService;
+}
+
+public void setValidationLogService(ValidationLogService validationLogService) {
+	this.validationLogService = validationLogService;
+}
+  
+  
+  
+  
 }
