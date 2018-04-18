@@ -121,7 +121,7 @@ public class XMLMessageValidatorImpl extends XMLMessageValidator {
         XMLValidationProxy vp = new XMLValidationProxy(title, "NIST");
         logger.info("Sending the message to the validation engine");
         EnhancedReport report =vp.validate(message, schemas, schematrons, "ALL",Context.valueOf(contextType));
-        validationLogService.generateAndSave(testContext, report);
+        validationLogService.generateAndSave(command.getUserId(), testContext, report);
         return new MessageValidationResult(report.to("json").toString(), report.render("iz-report",null));
       } else {
         if(testContext == null) {
