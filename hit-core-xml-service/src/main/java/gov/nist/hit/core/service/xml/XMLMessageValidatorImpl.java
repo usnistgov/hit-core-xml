@@ -17,7 +17,6 @@ import gov.nist.healthcare.unified.proxy.XMLValidationProxy;
 import gov.nist.hit.core.domain.MessageValidationCommand;
 import gov.nist.hit.core.domain.MessageValidationResult;
 import gov.nist.hit.core.domain.TestContext;
-import gov.nist.hit.core.domain.log.ValidationLog;
 import gov.nist.hit.core.service.ValidationLogService;
 import gov.nist.hit.core.service.exception.MessageException;
 import gov.nist.hit.core.service.exception.MessageValidationException;
