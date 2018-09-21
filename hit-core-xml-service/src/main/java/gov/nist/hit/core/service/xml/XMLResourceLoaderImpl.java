@@ -306,6 +306,9 @@ public class XMLResourceLoaderImpl extends XMLResourceLoader {
     throw new UnsupportedOperationException();
   }
 
-
+  @Override protected IntegrationProfile getIntegrationProfile(String sourceId) throws IOException {
+    //Not used in XML
+    throw new UnsupportedOperationException();
+  }
 
 }
