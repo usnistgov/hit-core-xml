@@ -244,34 +244,36 @@ public class XMLResourceLoaderImpl extends XMLResourceLoader {
       }
       testContext.setMessage(message(FileUtil.getContent(getResource(location + "Message.xml",rootPath)),domain, scope, authorUsername, preloaded));
 
-      testContext.setSchemaPathList(getSchemas(location, parentOb.findValue("schemaPathList"),rootPath));
+      testContext.setSchemaPathList(getSchemas(location, parentOb.findValue("schemaPathList"),rootPath, domain));
       testContext.setSchematronPathList(getSchematrons(location,
-          parentOb.findValue("schematronPathList"),rootPath));
+          parentOb.findValue("schematronPathList"),rootPath, domain));
       return testContext;
     }
   }
 
-  private Set<String> getSchemas(String path, JsonNode schemaPathListObj, String rootPath) throws IOException {
+  private Set<String> getSchemas(String path, JsonNode schemaPathListObj, String rootPath,String domain) throws IOException {
     Set<String> schemaPathList = new HashSet<String>();
     if (schemaPathListObj != null && schemaPathListObj.isArray()) {
       Iterator<JsonNode> it = schemaPathListObj.iterator();
       while (it.hasNext()) {
         JsonNode node = it.next();
         if (node.textValue() != null && !"".equals(node.textValue())) {
-          schemaPathList.add(SCHEMA_PATTERN + node.textValue());
+          logger.debug("SCHEMAPATH LOOP1: "+SCHEMA_PATTERN + domain + "/" + node.textValue());
+          schemaPathList.add(SCHEMA_PATTERN + domain + "/" + node.textValue());
         }
       }
     }
     List<Resource> specificSchemas = getResources(path + "*.xsd",rootPath);
     if (specificSchemas != null && !specificSchemas.isEmpty()) {
       for (Resource schema : specificSchemas) {
+        logger.debug("SCHEMAPATH LOOP2: "+path + schema.getFilename());
         schemaPathList.add(path + schema.getFilename());
       }
     }
     return schemaPathList;
   }
 
-  private Set<String> getSchematrons(String path, JsonNode schematronPathListObj, String rootPath)
+  private Set<String> getSchematrons(String path, JsonNode schematronPathListObj, String rootPath,String domain)
       throws IOException {
     Set<String> schematronPathList = new HashSet<String>();
     if (schematronPathListObj != null && schematronPathListObj.isArray()) {
@@ -279,13 +281,15 @@ public class XMLResourceLoaderImpl extends XMLResourceLoader {
       while (it.hasNext()) {
         JsonNode node = it.next();
         if (node.textValue() != null && !"".equals(node.textValue())) {
-          schematronPathList.add(SCHEMATRON_PATTERN + node.textValue());
+          logger.debug("SCHEMATRONPATH LOOP1: "+SCHEMA_PATTERN + domain + "/" + node.textValue());
+          schematronPathList.add(SCHEMATRON_PATTERN + domain + "/" + node.textValue());
         }
       }
     }
     List<Resource> specificSchematrons = getResources(path + "*.sch",rootPath);
     if (specificSchematrons != null && !specificSchematrons.isEmpty()) {
       for (Resource schematron : specificSchematrons) {
+        logger.debug("SCHEMATRONPATH LOOP2: "+path + schematron.getFilename());
         schematronPathList.add(path + schematron.getFilename());
       }
     }
