@@ -56,7 +56,7 @@
  		<dependency>
 			<groupId>gov.nist.healthcare.hl7.v2.unifiedreport</groupId>
 			<artifactId>validation-proxy</artifactId>
-			<version>1.0.4-N</version>
+			<version>1.0.9</version>
 		</dependency>
 			 
 	</dependencies>
@@ -67,4 +67,23 @@
 			<url>http://repo.springsource.org/libs-milestone/</url>
 		</repository>
 	</repositories>
+	
+	<distributionManagement>
+		<repository>
+			<id>releases</id>
+			<url>https://hit-dev.nist.gov:9001/repository/releases</url>
+		</repository>
+		<snapshotRepository>
+			<id>snapshots</id>
+			<name>Internal Snapshots</name>
+			<url>https://hit-dev.nist.gov:9001/repository/snapshots</url>
+		</snapshotRepository>
+	</distributionManagement>
+	
+	<scm>
+		<connection>scm:git:https://github.com/usnistgov/hit-core-xml.git</connection>
+		<url>scm:git:https://github.com/usnistgov/hit-core-xml.git</url>
+		<developerConnection>scm:git:https://github.com/usnistgov/hit-core-xml.git</developerConnection>
+  </scm>
+	
 </project>
