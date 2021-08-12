@@ -7,7 +7,7 @@
 	<parent>
 		<groupId>gov.nist.hit.core.xml</groupId>
 		<artifactId>hit-core-xml</artifactId>
-		<version>1.0.0.IZTOOLNIST</version>
+		<version>1.0.1.IZTOOLNIST-SNAPSHOT</version>
 	</parent>
 
 	<build>
