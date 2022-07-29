@@ -15,7 +15,7 @@
 	</modules>
 
 	<properties>
-        <hit-core.version>1.0.25-SNAPSHOT</hit-core.version>
+        <hit-core.version>1.0.29-SNAPSHOT</hit-core.version>
  	</properties>
 
 	<dependencies>		
@@ -64,5 +64,16 @@
 			</plugins>
 		</pluginManagement>
 	</build>
+	<distributionManagement>
+		<repository>
+			<id>releases</id>
+			<url>https://hit-nexus.nist.gov/repository/releases/</url>
+		</repository>
+		<snapshotRepository>
+			<id>snapshots</id>
+			<name>Internal Snapshots</name>
+			<url>https://hit-nexus.nist.gov/repository/snapshots</url>
+		</snapshotRepository>
+	</distributionManagement>
 
 </project>
