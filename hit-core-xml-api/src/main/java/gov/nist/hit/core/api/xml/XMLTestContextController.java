@@ -10,68 +10,66 @@
  * that they have been modified.
  */
 
-package gov.nist.hit.core.api.xml;
+ package gov.nist.hit.core.api.xml;
 
-import gov.nist.hit.core.api.TestContextController;
-import gov.nist.hit.core.domain.*;
-import gov.nist.hit.core.repo.TestCaseRepository;
-import gov.nist.hit.core.service.*;
-import gov.nist.hit.core.service.exception.MessageException;
-import gov.nist.hit.core.service.exception.MessageParserException;
-import gov.nist.hit.core.service.exception.MessageValidationException;
-import gov.nist.hit.core.service.exception.TestCaseException;
-import gov.nist.hit.core.service.xml.XMLMessageParser;
-import gov.nist.hit.core.service.xml.XMLMessageValidator;
-import gov.nist.hit.core.service.xml.XMLValidationReportConverter;
-import gov.nist.hit.core.service.xml.XMLValidationReportConverterImpl;
-import gov.nist.hit.core.xml.domain.XMLTestContext;
-import gov.nist.hit.core.xml.repo.XMLTestContextRepository;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
-
-/**
- * @author Harold Affo (NIST)
- * 
- */
-
-@RequestMapping("/xml/testcontext")
-@RestController
-public class XMLTestContextController extends TestContextController {
-
-  Logger logger = LoggerFactory.getLogger(XMLTestContextController.class);
-
-@Autowired
-public XMLValidationReportConverter xmlValidationReportConverter;
-
-@Autowired
-public XMLMessageValidator xmlMessageValidator;
-
-  @Autowired
-  public XMLMessageParser xmlMessageParser;
-
-  @Autowired
-  public XMLTestContextRepository xmlTestContextRepository;
-
-  @Override
-  public MessageValidator getMessageValidator() {
-    return xmlMessageValidator;
-  }
-
-  @Override
-  public MessageParser getMessageParser() {
-    return xmlMessageParser;
-  }
-
-  @Override
-  public TestContext getTestContext(Long aLong) {
-    return xmlTestContextRepository.findOne(aLong);
-  }
-
-  @Override
-  public ValidationReportConverter getValidatioReportConverter() {
-    return xmlValidationReportConverter;
-  }
-
-}
+ import org.slf4j.Logger;
+ import org.slf4j.LoggerFactory;
+ import org.springframework.beans.factory.annotation.Autowired;
+ import org.springframework.web.bind.annotation.RequestMapping;
+ import org.springframework.web.bind.annotation.RestController;
+ 
+ import gov.nist.hit.core.api.TestContextController;
+ import gov.nist.hit.core.domain.TestContext;
+ import gov.nist.hit.core.service.MessageParser;
+ import gov.nist.hit.core.service.MessageValidator;
+ import gov.nist.hit.core.service.ValidationReportConverter;
+ import gov.nist.hit.core.service.xml.XMLMessageParser;
+ import gov.nist.hit.core.service.xml.XMLMessageValidator;
+ import gov.nist.hit.core.service.xml.XMLValidationReportConverter;
+ import gov.nist.hit.core.xml.repo.XMLTestContextRepository;
+ 
+ /**
+  * @author Harold Affo (NIST)
+  * 
+  */
+ 
+ @RequestMapping("/xml/testcontext")
+ @RestController
+ public class XMLTestContextController extends TestContextController {
+ 
+   Logger logger = LoggerFactory.getLogger(XMLTestContextController.class);
+ 
+   @Autowired
+   public XMLValidationReportConverter xmlValidationReportConverter;
+   
+   @Autowired
+   public XMLMessageValidator xmlMessageValidator;
+ 
+   @Autowired
+   public XMLMessageParser xmlMessageParser;
+ 
+   @Autowired
+   public XMLTestContextRepository xmlTestContextRepository;
+ 
+   @Override
+   public MessageValidator getMessageValidator() {
+     return xmlMessageValidator;
+   }
+ 
+   @Override
+   public MessageParser getMessageParser() {
+     return xmlMessageParser;
+   }
+ 
+   @Override
+   public TestContext getTestContext(Long aLong) {
+     return xmlTestContextRepository.findOne(aLong);
+   }
+ 
+   @Override
+   public ValidationReportConverter getValidatioReportConverter() {
+     return xmlValidationReportConverter;
+   }
+ 
+ }
+ 
