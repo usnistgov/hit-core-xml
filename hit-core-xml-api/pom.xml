@@ -7,7 +7,7 @@
 	<parent>
 		<groupId>gov.nist.hit.core.xml</groupId>
 		<artifactId>hit-core-xml</artifactId>
-		<version>1.0.0-LEGACY-SNAPSHOT</version>
+		<version>1.0.0-LEGACY</version>
 	</parent>
 
 	<build>
