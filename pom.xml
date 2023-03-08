@@ -1,9 +1,8 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>gov.nist.hit.core.xml</groupId>
 	<artifactId>hit-core-xml</artifactId>
-	<version>1.0.0-LEGACY-SNAPSHOT</version>
+	<version>1.0.0-LEGACY</version>
 	<name>hit-core-xml</name>
 	<description>hit-core-xml</description>
 	<packaging>pom</packaging>
@@ -79,5 +78,6 @@
 		<connection>scm:git:https://github.com/usnistgov/hit-core-xml.git</connection>
 		<url>scm:git:https://github.com/usnistgov/hit-core-xml.git</url>
 		<developerConnection>scm:git:https://github.com/usnistgov/hit-core-xml.git</developerConnection>
+    <tag>hit-core-xml-1.0.0-LEGACY</tag>
   </scm>
 </project>
