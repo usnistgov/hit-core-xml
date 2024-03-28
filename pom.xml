@@ -2,7 +2,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>gov.nist.hit.core.xml</groupId>
 	<artifactId>hit-core-xml</artifactId>
-	<version>1.0.2.IZTOOLNIST-SNAPSHOT</version>
+	<version>1.0.1.IZTOOLNIST-SNAPSHOT</version>
 	<name>hit-core-xml</name>
 	<description>hit-core-xml</description>
 	<packaging>pom</packaging>
@@ -83,12 +83,12 @@
 	<distributionManagement>
 		<repository>
 			<id>releases</id>
-			<url>https://hit-dev.nist.gov:9001/repository/releases</url>
+			<url>https://hit-nexus.nist.gov/repository/releases/</url>
 		</repository>
 		<snapshotRepository>
 			<id>snapshots</id>
 			<name>Internal Snapshots</name>
-			<url>https://hit-dev.nist.gov:9001/repository/snapshots</url>
+			<url>https://hit-nexus.nist.gov/repository/snapshots</url>
 		</snapshotRepository>
 	</distributionManagement>
 	
