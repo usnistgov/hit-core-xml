@@ -2,7 +2,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>gov.nist.hit.core.xml</groupId>
 	<artifactId>hit-core-xml</artifactId>
-	<version>1.0.1.IZTOOLNIST-SNAPSHOT</version>
+	<version>1.0.1.IZTOOLNIST</version>
 	<name>hit-core-xml</name>
 	<description>hit-core-xml</description>
 	<packaging>pom</packaging>
@@ -96,7 +96,7 @@
 		<connection>scm:git:https://github.com/usnistgov/hit-core-xml.git</connection>
 		<url>scm:git:https://github.com/usnistgov/hit-core-xml.git</url>
 		<developerConnection>scm:git:https://github.com/usnistgov/hit-core-xml.git</developerConnection>
-    <tag>HEAD</tag>
+    <tag>hit-core-xml-1.0.1.IZTOOLNIST</tag>
   </scm>
 
 </project>
