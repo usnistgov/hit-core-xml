@@ -14,7 +14,7 @@
 	</modules>
 
 	<properties>
-        <hit-core.version>1.0.35.IZTOOLNIST-SNAPSHOT</hit-core.version>
+        <hit-core.version>1.0.35.IZTOOLNIST</hit-core.version>
  	</properties>
 
 	<dependencies>		
