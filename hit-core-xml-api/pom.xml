@@ -7,9 +7,13 @@
 	<parent>
 		<groupId>gov.nist.hit.core.xml</groupId>
 		<artifactId>hit-core-xml</artifactId>
-		<version>1.0.2-SNAPSHOT</version>
+		<version>1.0.1-SNAPSHOT</version>
 	</parent>
 
+	<properties>		
+		<java.version>1.8</java.version>		
+	</properties>
+	
 	<build>
 		<pluginManagement>
 			<plugins>
@@ -18,12 +22,13 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-compiler-plugin</artifactId>
-					<version>2.5.1</version>
+					<version>3.8.1</version>
 					<configuration>
-						<source>1.7</source>
-						<target>1.7</target>
+						<source>${java.version}</source>
+						<target>${java.version}</target>
 					</configuration>
 				</plugin>
+
 
 				<plugin>
 					<artifactId>maven-eclipse-plugin</artifactId>
