@@ -7,7 +7,7 @@
 	<parent>
 		<groupId>gov.nist.hit.core.xml</groupId>
 		<artifactId>hit-core-xml</artifactId>
-		<version>1.0.2.ex-SNAPSHOT</version>
+		<version>1.1.0</version>
 	</parent>
 
 	<properties>		
@@ -54,8 +54,7 @@
 			<groupId>gov.nist.hit.core.xml</groupId>
 			<artifactId>hit-core-xml-service</artifactId>
 			<version>${project.version}</version>
-		</dependency>
-			
+		</dependency>			
 
 						<dependency>
 			<groupId>javax.servlet</groupId>
