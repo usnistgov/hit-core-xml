@@ -335,6 +335,14 @@
    //Not used in XML
      throw new UnsupportedOperationException();
  }
+
+
+
+	@Override
+	public ProfileModel parseEnhanced(String integrationProfileXml, String conformanceProfileId, String constraintsXml, String additionalConstraintsXml,
+			String valueSets, String valueSetBindings, String coConstraints, String slicings) throws ProfileParserException, UnsupportedOperationException {
+		throw new UnsupportedOperationException();
+	}
  
  }
  
